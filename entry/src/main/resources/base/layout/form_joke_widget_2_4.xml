@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DependentLayout
+    xmlns:ohos="http://schemas.huawei.com/res/ohos"
+    ohos:height="match_parent"
+    ohos:width="match_parent"
+    ohos:background_element="#FFFFFFFF"
+    ohos:id="$+id:dl_form_joke_widget_root"
+    ohos:padding="12vp"
+    ohos:remote="true">
+
+    <DirectionalLayout
+        ohos:height="match_parent"
+        ohos:width="match_parent"
+        ohos:orientation="vertical">
+
+        <Text
+            ohos:text_color="#000000"
+            ohos:height="match_content"
+            ohos:width="match_parent"
+            ohos:text="Joke of the day:"
+            ohos:text_size="16vp"/>
+
+        <Text
+            ohos:id="$+id:t_form_joke_widget_setup"
+            ohos:height="match_content"
+            ohos:width="match_parent"
+            ohos:hint="Setup"
+            ohos:multiple_lines="true"
+            ohos:text_size="14vp"
+            ohos:top_margin="8vp"/>
+
+        <Text
+            ohos:id="$+id:t_form_joke_widget_punchline"
+            ohos:height="match_content"
+            ohos:width="match_parent"
+            ohos:hint="Punchline goes here"
+            ohos:multiple_lines="true"
+            ohos:top_margin="4vp"/>
+
+    </DirectionalLayout>
+
+    <Image
+        ohos:align_parent_bottom="true"
+        ohos:align_parent_end="true"
+        ohos:scale_mode="stretch"
+        ohos:image_src="$media:lol"
+        ohos:height="40vp"
+        ohos:width="40vp"/>
+
+    <Text
+        ohos:text_size="8vp"
+        ohos:id="$+id:t_form_joke_widget_created_time"
+        ohos:align_parent_start="true"
+        ohos:align_parent_bottom="true"
+        ohos:text="20.Dec 10:35"
+        ohos:width="match_content"
+        ohos:height="match_content"
+        />
+
+</DependentLayout>

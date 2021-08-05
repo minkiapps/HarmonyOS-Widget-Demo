@@ -1,0 +1,43 @@
+apply plugin: 'com.huawei.ohos.hap'
+apply plugin: 'com.huawei.ohos.decctest'
+//For instructions on signature configuration, see https://developer.harmonyos.com/en/docs/documentation/doc-guides/ide_debug_device-0000001053822404#EN-US_TOPIC_0000001154985555__section1112183053510
+ohos {
+    signingConfigs {
+        debug {
+            storeFile file('../signing/minkiappsdefaultdebug.p12')
+            storePassword '0000001846A578DEA861DC1ACB680F4819FC583A3E2C3BF0A0F9116D433E9CCEB4E2CCE4DB54EB4C'
+            keyAlias = 'minkiapps'
+            keyPassword '000000185A66D525CA35AC639AA71B299D965949DD5AAB7C55601F874241BA66C1925B7A740BE822'
+            signAlg = 'SHA256withECDSA'
+            profile file('../signing/widgetDemoDebug.p7b')
+            certpath file('../signing/minkiappsdefaultdebug.cer')
+        }
+    }
+    compileSdkVersion 5
+    defaultConfig {
+        compatibleSdkVersion 5
+    }
+    showInServiceCenter true
+    buildTypes {
+        release {
+            proguardOpt {
+                proguardEnabled false
+                rulesFiles 'proguard-rules.pro'
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.har'])
+    testImplementation 'junit:junit:4.13'
+
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.5.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.6.0'
+    implementation "com.squareup.retrofit2:converter-moshi:2.6.0"
+
+    ohosTestImplementation 'com.huawei.ohos.testkit:runner:1.0.0.100'
+}
+decc {
+    supportType = ['html', 'xml']
+}

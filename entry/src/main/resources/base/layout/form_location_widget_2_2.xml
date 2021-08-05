@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DependentLayout
+    xmlns:ohos="http://schemas.huawei.com/res/ohos"
+    ohos:height="match_parent"
+    ohos:width="match_parent"
+    ohos:background_element="#FFFFFFFF"
+    ohos:remote="true">
+
+    <DirectionalLayout
+        ohos:id="$+id:dl_form_location_widget_disabled"
+        ohos:orientation="vertical"
+        ohos:height="match_parent"
+        ohos:width="match_parent">
+
+        <Image
+            ohos:layout_alignment="horizontal_center"
+            ohos:height="48vp"
+            ohos:width="48vp"
+            ohos:horizontal_center="true"
+            ohos:image_src="$media:icon_location"
+            ohos:scale_mode="stretch"
+            ohos:top_margin="16vp"/>
+
+        <Text
+            ohos:id="$+id:t_form_location_widget_disabled_explanation"
+            ohos:start_margin="12vp"
+            ohos:end_margin="12vp"
+            ohos:top_margin="8vp"
+            ohos:text_alignment="center"
+            ohos:height="match_content"
+            ohos:multiple_lines="true"
+            ohos:width="match_parent"
+            ohos:text="Permanent location permission is not granted."/>
+    </DirectionalLayout>
+
+    <DirectionalLayout
+        ohos:visibility="hide"
+        ohos:orientation="vertical"
+        ohos:id="$+id:dl_form_location_widget_container"
+        ohos:height="match_parent"
+        ohos:width="match_parent">
+
+        <Text
+            ohos:text_alignment="center"
+            ohos:width="match_parent"
+            ohos:height="match_content"
+            ohos:top_margin="16vp"
+            ohos:text_size="16vp"
+            ohos:text_color="#000000"
+            ohos:text="Your Location"
+            />
+
+        <Image
+            ohos:id="$+id:i_form_location_widget_country_flag"
+            ohos:layout_alignment="horizontal_center"
+            ohos:height="32vp"
+            ohos:width="64vp"
+            ohos:top_margin="8vp"/>
+
+        <Text
+            ohos:top_margin="4vp"
+            ohos:start_margin="16vp"
+            ohos:end_margin="16vp"
+            ohos:id="$+id:t_form_location_widget_address"
+            ohos:text_alignment="center"
+            ohos:height="match_content"
+            ohos:multiple_lines="true"
+            ohos:width="match_parent"
+            ohos:hint="Address is loading..."/>
+
+    </DirectionalLayout>
+
+    <Text
+        ohos:margin="12vp"
+        ohos:text_size="8vp"
+        ohos:id="$+id:t_form_location_widget_last_updated_time"
+        ohos:align_parent_start="true"
+        ohos:align_parent_bottom="true"
+        ohos:text="20.Dec 10:35"
+        ohos:width="match_content"
+        ohos:height="match_content"
+        />
+</DependentLayout>
