@@ -17,25 +17,17 @@
             ohos:text_color="#000000"
             ohos:height="match_content"
             ohos:width="match_parent"
-            ohos:text="Joke of the day:"
+            ohos:text="Random Chuck Norris Joke"
             ohos:text_size="16vp"/>
 
         <Text
-            ohos:id="$+id:t_form_joke_widget_setup"
+            ohos:id="$+id:t_form_joke_widget_joke"
             ohos:height="match_content"
             ohos:width="match_parent"
-            ohos:hint="Setup"
+            ohos:hint="Joke is loading..."
             ohos:multiple_lines="true"
             ohos:text_size="14vp"
             ohos:top_margin="8vp"/>
-
-        <Text
-            ohos:id="$+id:t_form_joke_widget_punchline"
-            ohos:height="match_content"
-            ohos:width="match_parent"
-            ohos:hint="Punchline goes here"
-            ohos:multiple_lines="true"
-            ohos:top_margin="4vp"/>
 
     </DirectionalLayout>
 

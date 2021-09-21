@@ -15,7 +15,6 @@ public class MyApplication extends AbilityPackage {
 
     @Override
     public void onInitialize() {
-
         super.onInitialize();
     }
 
@@ -29,7 +28,7 @@ public class MyApplication extends AbilityPackage {
                     .addInterceptor(loggingInterceptor)
                     .build();
             final Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("https://official-joke-api.appspot.com/")
+                    .baseUrl("https://api.chucknorris.io/")
                     .addConverterFactory(MoshiConverterFactory.create()).client(client)
                     .build();
             apiService = retrofit.create(ApiService.class);

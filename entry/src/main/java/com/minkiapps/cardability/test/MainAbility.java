@@ -63,8 +63,7 @@ public class MainAbility extends Ability implements FormController.FormContext {
         if (requestCode == REQUEST_PERMISSION_CODE && Arrays.stream(grantResults).allMatch(i -> i == 0)) {
             FormControllerManager.getInstance(MainAbility.this)
                     .getAllFormIdFromSharePreference()
-                    .forEach(formId -> getMainTaskDispatcher().asyncDispatch(() -> onUpdateForm(formId)
-                            )
+                    .forEach(formId -> getMainTaskDispatcher().asyncDispatch(() -> onUpdateForm(formId))
                     );
         }
     }

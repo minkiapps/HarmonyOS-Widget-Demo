@@ -43,16 +43,11 @@ public class JokeWidgetImpl extends FormController {
     @Override
     public void updateFormData(final long formId) {
         formContext.getGlobalTaskDispatcher(TaskPriority.DEFAULT).asyncDispatch(() -> {
-            final Response<List<Joke>> listResponse;
             try {
-                listResponse = MyApplication.getApiService().fetchJokes().execute();
-                if(listResponse.isSuccessful()) {
-                    final List<Joke> jokes = listResponse.body();
-                    if(jokes != null && !jokes.isEmpty()) {
-                        updateForm(formId, jokes.get(0));
-                    } else {
-                        HiLog.debug(TAG, "No joke is available :(");
-                    }
+                final Response<Joke> jokeResponse = MyApplication.getApiService().fetchJokes().execute();
+                if(jokeResponse.isSuccessful()) {
+                    final Joke joke = jokeResponse.body();
+                    updateForm(formId, joke);
                 }
             } catch (IOException e) {
                 HiLog.error(TAG, "Failed to fetch jokes: " + e.getMessage(),e);
@@ -66,8 +61,7 @@ public class JokeWidgetImpl extends FormController {
 
         formContext.getMainTaskDispatcher().asyncDispatch(() -> {
             final ComponentProvider componentProvider = new ComponentProvider(ResourceTable.Layout_form_joke_widget_2_4, formContext);
-            componentProvider.setText(ResourceTable.Id_t_form_joke_widget_setup, joke.getSetup());
-            componentProvider.setText(ResourceTable.Id_t_form_joke_widget_punchline, joke.getPunchline());
+            componentProvider.setText(ResourceTable.Id_t_form_joke_widget_joke, joke.getValue());
             componentProvider.setText(ResourceTable.Id_t_form_joke_widget_created_time, "Joke is from " + simpleDateFormat.format(new Date()));
             formContext.updateWidget(formId, componentProvider);
         });
