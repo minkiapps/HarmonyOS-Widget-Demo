@@ -1,6 +1,7 @@
 package com.minkiapps.cardability.test.widget.controller;
 
-import com.minkiapps.cardability.test.widget.impl.JokeWidgetImpl;
+import com.minkiapps.cardability.test.widget.impl.JSJokeWidget;
+import com.minkiapps.cardability.test.widget.impl.JokeWidget;
 import com.minkiapps.cardability.test.widget.impl.LocationWidget;
 import ohos.data.DatabaseHelper;
 import ohos.data.preferences.Preferences;
@@ -29,6 +30,7 @@ public class FormControllerManager {
     //they should be the same name like in json.config forms declaration
     private static final String DEFAULT_WIDGET_NAME = "widget";
     private static final String JOKE_WIDGET_NAME = "joke_widget";
+    private static final String JOKE_JS_WIDGET_NAME = "jsjokecard";
 
     private final FormController.FormContext formContext;
     private final Preferences preferences;
@@ -124,7 +126,10 @@ public class FormControllerManager {
                 formController = new LocationWidget(formContext, formName, dimension);
                 break;
             case JOKE_WIDGET_NAME:
-                formController = new JokeWidgetImpl(formContext, formName, dimension);
+                formController = new JokeWidget(formContext, formName, dimension);
+                break;
+            case JOKE_JS_WIDGET_NAME:
+                formController = new JSJokeWidget(formContext, formName, dimension);
                 break;
             default:
                 break;

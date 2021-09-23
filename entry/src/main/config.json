@@ -43,6 +43,21 @@
         "type": "page",
         "forms": [
           {
+            "jsComponentName": "jsjokecard",
+            "isDefault": false,
+            "scheduledUpdateTime": "10:30",
+            "defaultDimension": "2*4",
+            "name": "jsjokecard",
+            "description": "This is a JS joke widget",
+            "colorMode": "auto",
+            "type": "JS",
+            "supportDimensions": [
+              "2*4"
+            ],
+            "updateEnabled": true,
+            "updateDuration": 1
+          },
+          {
             "landscapeLayouts": [
               "$layout:form_location_widget_2_2"
             ],
@@ -50,7 +65,7 @@
             "scheduledUpdateTime": "10:30",
             "defaultDimension": "2*2",
             "name": "widget",
-            "description": "This is a service widget",
+            "description": "This is a location service widget",
             "colorMode": "auto",
             "type": "Java",
             "supportDimensions": [
@@ -70,7 +85,7 @@
             "scheduledUpdateTime": "10:30",
             "defaultDimension": "2*4",
             "name": "joke_widget",
-            "description": "This is a joke widget",
+            "description": "This is a Java joke widget",
             "colorMode": "auto",
             "type": "Java",
             "supportDimensions": [
@@ -84,6 +99,19 @@
           }
         ],
         "launchType": "standard"
+      }
+    ],
+    "js": [
+      {
+        "pages": [
+          "pages/index/index"
+        ],
+        "name": "jsjokecard",
+        "window": {
+          "designWidth": 720,
+          "autoDesignWidth": true
+        },
+        "type": "form"
       }
     ],
     "reqPermissions": [

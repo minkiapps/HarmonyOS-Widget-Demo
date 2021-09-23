@@ -1,0 +1,12 @@
+{
+  "data": {
+    "joke_color": "slategrey",
+    "joke_text": "Loading joke..."
+  },
+  "actions": {
+    "reloadJoke": {
+      "action": "message",
+      "params": "RELOAD_JOKE"
+    }
+  }
+}

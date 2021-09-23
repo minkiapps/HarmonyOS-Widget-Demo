@@ -1,13 +1,10 @@
 package com.minkiapps.cardability.test;
 
 import com.minkiapps.cardability.test.slice.MainAbilitySlice;
-import ohos.aafwk.ability.Ability;
-import ohos.aafwk.ability.FormException;
+import ohos.aafwk.ability.*;
 import ohos.aafwk.content.Intent;
 import com.minkiapps.cardability.test.widget.controller.FormController;
 import com.minkiapps.cardability.test.widget.controller.FormControllerManager;
-import ohos.aafwk.ability.AbilitySlice;
-import ohos.aafwk.ability.ProviderFormInfo;
 import ohos.agp.components.ComponentProvider;
 import ohos.hiviewdfx.HiLog;
 import ohos.hiviewdfx.HiLogLabel;
@@ -108,7 +105,7 @@ public class MainAbility extends Ability implements FormController.FormContext {
 
     @Override
     protected void onTriggerFormEvent(long formId, String message) {
-        HiLog.debug(TAG, "onTriggerFormEvent: " + message);
+        HiLog.debug(TAG, String.format("OnTriggerFormEvent: %d Message: %s", formId, message));
         super.onTriggerFormEvent(formId, message);
         final FormControllerManager formControllerManager = FormControllerManager.getInstance(this);
         final FormController formController = formControllerManager.getController(formId);
@@ -153,6 +150,15 @@ public class MainAbility extends Ability implements FormController.FormContext {
     public void updateWidget(final long formId, final ComponentProvider componentProvider) {
         try {
             updateForm(formId, componentProvider);
+        } catch (FormException e) {
+            HiLog.error(TAG, "Failed to update form: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void updateWidget(final long formId, final FormBindingData formBindingData) {
+        try {
+            updateForm(formId, formBindingData);
         } catch (FormException e) {
             HiLog.error(TAG, "Failed to update form: " + e.getMessage(), e);
         }

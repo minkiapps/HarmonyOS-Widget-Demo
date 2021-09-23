@@ -1,0 +1,22 @@
+
+.background {
+    padding: 12px;
+    width: 100%;
+    height: 100%;
+    background-color: antiquewhite;
+}
+
+.joke-title {
+    color: black;
+    font-size: 18px;
+}
+
+.joke-text {
+    margin-top: 4px;
+    font-size: 14px;
+    font-style: italic;
+}
+
+.container {
+    flex-direction: column;
+}

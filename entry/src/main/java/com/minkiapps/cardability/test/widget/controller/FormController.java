@@ -1,6 +1,7 @@
 package com.minkiapps.cardability.test.widget.controller;
 
 import ohos.aafwk.ability.AbilitySlice;
+import ohos.aafwk.ability.FormBindingData;
 import ohos.aafwk.ability.ProviderFormInfo;
 import ohos.aafwk.content.Intent;
 import ohos.agp.components.ComponentProvider;
@@ -14,6 +15,8 @@ public abstract class FormController {
     public interface FormContext extends Context{
 
         void updateWidget(final long formId, final ComponentProvider componentProvider);
+
+        void updateWidget(final long formId, final FormBindingData formBindingData);
 
         boolean isWidgetStillAlive(final long formId);
 

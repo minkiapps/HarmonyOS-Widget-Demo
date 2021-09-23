@@ -17,9 +17,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class JokeWidgetImpl extends FormController {
+public class JokeWidget extends FormController {
 
-    private static final HiLogLabel TAG = new HiLogLabel(HiLog.DEBUG, 0x0, JokeWidgetImpl.class.getName());
+    private static final HiLogLabel TAG = new HiLogLabel(HiLog.DEBUG, 0x0, JokeWidget.class.getName());
 
     private static final int DEFAULT_DIMENSION_2X4 = 3;
     private static final Map<Integer, Integer> RESOURCE_ID_MAP = new HashMap<>();
@@ -30,7 +30,7 @@ public class JokeWidgetImpl extends FormController {
         RESOURCE_ID_MAP.put(DEFAULT_DIMENSION_2X4, ResourceTable.Layout_form_joke_widget_2_4);
     }
 
-    public JokeWidgetImpl(final FormContext formContext, final String formName, final Integer dimension) {
+    public JokeWidget(final FormContext formContext, final String formName, final Integer dimension) {
         super(formContext, formName, dimension);
     }
 
@@ -42,6 +42,10 @@ public class JokeWidgetImpl extends FormController {
 
     @Override
     public void updateFormData(final long formId) {
+        loadJoke(formId);
+    }
+
+    private void loadJoke(final long formId) {
         formContext.getGlobalTaskDispatcher(TaskPriority.DEFAULT).asyncDispatch(() -> {
             try {
                 final Response<Joke> jokeResponse = MyApplication.getApiService().fetchJokes().execute();
