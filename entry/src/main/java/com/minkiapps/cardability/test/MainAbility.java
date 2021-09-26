@@ -14,11 +14,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainAbility extends Ability implements FormController.FormContext {
+public class MainAbility extends LifeCycleTrackerAbility implements FormController.FormContext {
 
     public static final int DEFAULT_DIMENSION_2X2 = 2;
     private static final int INVALID_FORM_ID = -1;
-    private static final HiLogLabel TAG = new HiLogLabel(HiLog.DEBUG, 0x0, MainAbility.class.getName());
+    private static final HiLogLabel TAG = new HiLogLabel(HiLog.DEBUG, 0x1, MainAbility.class.getName());
     private static final int REQUEST_PERMISSION_CODE = 10001;
 
     private String topWidgetSlice;
@@ -31,6 +31,7 @@ public class MainAbility extends Ability implements FormController.FormContext {
     @Override
     public void onStart(Intent intent) {
         super.onStart(intent);
+
         super.setMainRoute(MainAbilitySlice.class.getName());
         if (intentFromWidget(intent)) {
             topWidgetSlice = getRoutePageSlice(intent);
@@ -67,7 +68,7 @@ public class MainAbility extends Ability implements FormController.FormContext {
 
     @Override
     protected ProviderFormInfo onCreateForm(Intent intent) {
-        HiLog.debug(TAG, "onCreateForm");
+        super.onCreateForm(intent);
         final long formId = intent.getLongParam(AbilitySlice.PARAM_FORM_IDENTITY_KEY, INVALID_FORM_ID);
         final String formName = intent.getStringParam(AbilitySlice.PARAM_FORM_NAME_KEY);
         final int dimension = intent.getIntParam(AbilitySlice.PARAM_FORM_DIMENSION_KEY, DEFAULT_DIMENSION_2X2);
@@ -88,7 +89,6 @@ public class MainAbility extends Ability implements FormController.FormContext {
 
     @Override
     protected void onUpdateForm(long formId) {
-        HiLog.debug(TAG, "onUpdateForm");
         super.onUpdateForm(formId);
         final FormControllerManager formControllerManager = FormControllerManager.getInstance(this);
         final FormController formController = formControllerManager.getController(formId);
@@ -97,7 +97,6 @@ public class MainAbility extends Ability implements FormController.FormContext {
 
     @Override
     protected void onDeleteForm(long formId) {
-        HiLog.debug(TAG, "onDeleteForm: formId=" + formId);
         super.onDeleteForm(formId);
         final FormControllerManager formControllerManager = FormControllerManager.getInstance(this);
         formControllerManager.deleteFormController(formId);
@@ -105,7 +104,6 @@ public class MainAbility extends Ability implements FormController.FormContext {
 
     @Override
     protected void onTriggerFormEvent(long formId, String message) {
-        HiLog.debug(TAG, String.format("OnTriggerFormEvent: %d Message: %s", formId, message));
         super.onTriggerFormEvent(formId, message);
         final FormControllerManager formControllerManager = FormControllerManager.getInstance(this);
         final FormController formController = formControllerManager.getController(formId);
