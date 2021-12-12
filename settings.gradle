@@ -1,1 +1,1 @@
-include ':entry', ':widgetlibrary'
+include ':entry', ':formlibrary'

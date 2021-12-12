@@ -1,9 +1,9 @@
-package com.minkiapps.widgetmanager;
+package com.minkiapps.form;
 
-import com.minkiapps.widgetmanager.model.WidgetInfo;
-import com.minkiapps.widgetmanager.model.enums.LocationStatus;
-import com.minkiapps.widgetmanager.model.enums.ScreenType;
-import com.minkiapps.widgetmanager.utils.LogUtils;
+import com.minkiapps.form.model.FormProperties;
+import com.minkiapps.form.model.enums.LocationStatus;
+import com.minkiapps.form.model.enums.ScreenType;
+import com.minkiapps.form.utils.LogUtils;
 import ohos.aafwk.ability.AbilitySlice;
 import ohos.aafwk.ability.FormBindingData;
 import ohos.aafwk.ability.FormException;
@@ -15,22 +15,22 @@ import ohos.location.Locator;
 
 import java.util.Arrays;
 
-abstract public class WidgetAbility extends LifeCycleTrackerAbility implements WidgetController.WidgetContext {
+abstract public class FormAbility extends LifeCycleTrackerAbility implements FormController.FormContext {
 
     public static final int DEFAULT_DIMENSION_2X2 = 2;
     private static final int INVALID_FORM_ID = -1;
-    private static final String TAG = WidgetAbility.class.getSimpleName();
+    private static final String TAG = FormAbility.class.getSimpleName();
 
     private static final String[] locationPermission = {
             "ohos.permission.LOCATION"
     };
 
-    private final WidgetFactory widgetFactory = getWidgetFactory();
+    private final FormControllerFactory formControllerFactory = getFormFactory();
 
-    protected abstract WidgetFactory getWidgetFactory();
+    protected abstract FormControllerFactory getFormFactory();
 
-    protected WidgetControllerManager getWidgetControllerManager() {
-        return WidgetControllerManager.getInstance(this, widgetFactory);
+    protected FormControllerManager getFormControllerManager() {
+        return FormControllerManager.getInstance(this, formControllerFactory);
     }
 
     private String topWidgetSlice;
@@ -65,20 +65,20 @@ abstract public class WidgetAbility extends LifeCycleTrackerAbility implements W
 
         LogUtils.d(TAG, "onCreateForm: formId=" + formId + ",formName=" + formName + " isQTZ: " + isQTZ);
 
-        WidgetController widgetController = getWidgetControllerManager().getController(formId);
-        widgetController = (widgetController == null) ? getWidgetControllerManager().createFormController(
-                new WidgetInfo.Builder(formId)
+        FormController formController = getFormControllerManager().getController(formId);
+        formController = (formController == null) ? getFormControllerManager().createFormController(
+                new FormProperties.Builder(formId)
                         .withName(formName)
                         .withDimension(dimension)
                         .withScreenType(isQTZ ? ScreenType.QTZ : ScreenType.NORMAL)
-                        .build()) : widgetController;
+                        .build()) : formController;
 
-        if (widgetController == null) {
+        if (formController == null) {
             LogUtils.e(TAG, "Get null controller. formId: " + formId + ", formName: " + formName);
             return null;
         }
 
-        return widgetController.bindWidgetData();
+        return formController.bindFormData();
     }
 
     @Override
@@ -101,21 +101,21 @@ abstract public class WidgetAbility extends LifeCycleTrackerAbility implements W
     @Override
     protected void onUpdateForm(long formId) {
         super.onUpdateForm(formId);
-        final WidgetController widgetController = getWidgetControllerManager().getController(formId);
-        widgetController.updateWidgetData();
+        final FormController formController = getFormControllerManager().getController(formId);
+        formController.updateFormData();
     }
 
     @Override
     protected void onDeleteForm(long formId) {
         super.onDeleteForm(formId);
-        getWidgetControllerManager().deleteWidgetController(formId);
+        getFormControllerManager().deleteFormController(formId);
     }
 
     @Override
     protected void onTriggerFormEvent(long formId, String message) {
         super.onTriggerFormEvent(formId, message);
-        final WidgetController widgetController = getWidgetControllerManager().getController(formId);
-        widgetController.onTriggerWidgetEvent(message);
+        final FormController formController = getFormControllerManager().getController(formId);
+        formController.onTriggerFormEvent(message);
     }
 
     private boolean intentFromWidget(Intent intent) {
@@ -124,16 +124,16 @@ abstract public class WidgetAbility extends LifeCycleTrackerAbility implements W
     }
 
     private String getRoutePageSlice(Intent intent) {
-        final long widgetId = intent.getLongParam(AbilitySlice.PARAM_FORM_IDENTITY_KEY, INVALID_FORM_ID);
-        if (widgetId == INVALID_FORM_ID) {
+        final long formId = intent.getLongParam(AbilitySlice.PARAM_FORM_IDENTITY_KEY, INVALID_FORM_ID);
+        if (formId == INVALID_FORM_ID) {
             return null;
         }
 
-        final WidgetController widgetController = getWidgetControllerManager().getController(widgetId);
-        if (widgetController == null) {
+        final FormController formController = getFormControllerManager().getController(formId);
+        if (formController == null) {
             return null;
         }
-        Class<? extends AbilitySlice> clazz = widgetController.getRoutePageSlice(intent);
+        Class<? extends AbilitySlice> clazz = formController.getRoutePageSlice(intent);
         if (clazz == null) {
             return null;
         }
@@ -141,7 +141,7 @@ abstract public class WidgetAbility extends LifeCycleTrackerAbility implements W
     }
 
     @Override
-    public void updateWidget(final long formId, final ComponentProvider componentProvider) {
+    public void updateFormWidget(final long formId, final ComponentProvider componentProvider) {
         try {
             updateForm(formId, componentProvider);
         } catch (FormException e) {
@@ -150,7 +150,7 @@ abstract public class WidgetAbility extends LifeCycleTrackerAbility implements W
     }
 
     @Override
-    public void updateWidget(final long formId, final FormBindingData formBindingData) {
+    public void updateFormWidget(final long formId, final FormBindingData formBindingData) {
         try {
             updateForm(formId, formBindingData);
         } catch (FormException e) {
@@ -159,13 +159,13 @@ abstract public class WidgetAbility extends LifeCycleTrackerAbility implements W
     }
 
     @Override
-    public boolean isWidgetStillAlive(final long formId) {
-        return getWidgetControllerManager().getAllWidgetIdFromSharePreference().contains(formId);
+    public boolean isFormStillAlive(final long formId) {
+        return getFormControllerManager().getAllFormIdFromSharePreference().contains(formId);
     }
 
     @Override
-    public void updateAllWidgets() {
-        getWidgetControllerManager().getAllWidgetIdFromSharePreference().forEach(this::onUpdateForm);
+    public void updateAllForms() {
+        getFormControllerManager().getAllFormIdFromSharePreference().forEach(this::onUpdateForm);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.minkiapps.widgetmanager.model.enums;
+package com.minkiapps.form.model.enums;
 
 public enum ScreenType {
     NORMAL, QTZ;

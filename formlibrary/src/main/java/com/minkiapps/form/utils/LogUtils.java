@@ -1,4 +1,4 @@
-package com.minkiapps.widgetmanager.utils;
+package com.minkiapps.form.utils;
 
 import ohos.hiviewdfx.HiLog;
 import ohos.hiviewdfx.HiLogLabel;
@@ -9,7 +9,7 @@ public class LogUtils {
 
     private static final int MSG_CHAR_LIMIT = 1000;
 
-    private static final String TAG_LOG = "widgetmanager";
+    private static final String TAG_LOG = "formmanager";
 
     private static final int DOMAIN_ID = 1001;
 

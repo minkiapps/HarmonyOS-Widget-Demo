@@ -1,15 +1,15 @@
 package com.minkiapps.cardability.test;
 
 import com.minkiapps.cardability.test.slice.LocationAbilitySlice;
-import com.minkiapps.cardability.test.widget.WidgetFactoryImpl;
-import com.minkiapps.widgetmanager.WidgetAbility;
-import com.minkiapps.widgetmanager.WidgetFactory;
+import com.minkiapps.cardability.test.form.FormControllerFactoryImpl;
+import com.minkiapps.form.FormAbility;
+import com.minkiapps.form.FormControllerFactory;
 
 import java.util.Arrays;
 
 import static com.minkiapps.cardability.test.slice.LocationAbilitySlice.REQUEST_PERMISSION_CODE;
 
-public class MainAbility extends WidgetAbility {
+public class MainAbility extends FormAbility {
 
     @Override
     protected String getMainRouteEntry() {
@@ -17,8 +17,8 @@ public class MainAbility extends WidgetAbility {
     }
 
     @Override
-    protected WidgetFactory getWidgetFactory() {
-        return new WidgetFactoryImpl();
+    protected FormControllerFactory getFormFactory() {
+        return new FormControllerFactoryImpl();
     }
 
     @Override
@@ -26,7 +26,7 @@ public class MainAbility extends WidgetAbility {
         super.onRequestPermissionsFromUserResult(requestCode, permissions, grantResults);
 
         if (requestCode == REQUEST_PERMISSION_CODE && Arrays.stream(grantResults).allMatch(i -> i == 0)) {
-            updateAllWidgets();
+            updateAllForms();
         }
     }
 }

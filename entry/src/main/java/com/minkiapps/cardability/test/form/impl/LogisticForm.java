@@ -1,9 +1,9 @@
-package com.minkiapps.cardability.test.widget.impl;
+package com.minkiapps.cardability.test.form.impl;
 
 import com.minkiapps.cardability.test.slice.LogisticAbilitySlice;
-import com.minkiapps.widgetmanager.WidgetController;
-import com.minkiapps.widgetmanager.model.WidgetInfo;
-import com.minkiapps.widgetmanager.model.enums.ScreenType;
+import com.minkiapps.form.FormController;
+import com.minkiapps.form.model.FormProperties;
+import com.minkiapps.form.model.enums.ScreenType;
 import ohos.aafwk.ability.AbilitySlice;
 import ohos.aafwk.ability.FormBindingData;
 import ohos.aafwk.ability.ProviderFormInfo;
@@ -12,7 +12,7 @@ import ohos.utils.zson.ZSONObject;
 
 import java.util.Random;
 
-public class LogisticWidget extends WidgetController {
+public class LogisticForm extends FormController {
 
     private static final String DATA_IS_QTZ = "isQtzType";
     private static final String DATA_DESCRIPTION = "description";
@@ -26,31 +26,31 @@ public class LogisticWidget extends WidgetController {
 
     private final Random random = new Random();
 
-    public LogisticWidget(final WidgetContext widgetContext, final WidgetInfo widgetInfo) {
-        super(widgetContext, widgetInfo);
+    public LogisticForm(final FormContext formContext, final FormProperties formProperties) {
+        super(formContext, formProperties);
     }
 
     @Override
-    public ProviderFormInfo bindWidgetData() {
+    public ProviderFormInfo bindFormData() {
         final ProviderFormInfo providerFormInfo = new ProviderFormInfo();
         providerFormInfo.setJsBindingData(new FormBindingData(createFormDataZSONObject()));
         return providerFormInfo;
     }
 
     @Override
-    public void updateWidgetData() {
-        widgetContext.updateWidget(widgetInfo.getWidgetId(), new FormBindingData(createFormDataZSONObject()));
+    public void updateFormData() {
+        formContext.updateFormWidget(formProperties.getFormId(), new FormBindingData(createFormDataZSONObject()));
     }
 
     private ZSONObject createFormDataZSONObject() {
         final ZSONObject zsonObject = new ZSONObject();
-        zsonObject.put(DATA_IS_QTZ, widgetInfo.getScreenType() == ScreenType.QTZ);
+        zsonObject.put(DATA_IS_QTZ, formProperties.getScreenType() == ScreenType.QTZ);
         zsonObject.put(DATA_DESCRIPTION, randomDescriptions[random.nextInt(4)]);
         return zsonObject;
     }
 
     @Override
-    public void onTriggerWidgetEvent(final String message) {
+    public void onTriggerFormEvent(final String message) {
 
     }
 

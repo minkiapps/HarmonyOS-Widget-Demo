@@ -1,6 +1,6 @@
-package com.minkiapps.widgetmanager;
+package com.minkiapps.form;
 
-import com.minkiapps.widgetmanager.utils.LogUtils;
+import com.minkiapps.form.utils.LogUtils;
 import ohos.aafwk.ability.Ability;
 import ohos.aafwk.ability.ProviderFormInfo;
 import ohos.aafwk.content.Intent;

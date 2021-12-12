@@ -1,11 +1,11 @@
-package com.minkiapps.cardability.test.widget.impl;
+package com.minkiapps.cardability.test.form.impl;
 
 import com.minkiapps.cardability.test.MyApplication;
 import com.minkiapps.cardability.test.ResourceTable;
 import com.minkiapps.cardability.test.net.model.Joke;
 import com.minkiapps.cardability.test.slice.JokeAbilitySlice;
-import com.minkiapps.widgetmanager.WidgetController;
-import com.minkiapps.widgetmanager.model.WidgetInfo;
+import com.minkiapps.form.FormController;
+import com.minkiapps.form.model.FormProperties;
 import ohos.aafwk.ability.AbilitySlice;
 import ohos.aafwk.ability.ProviderFormInfo;
 import ohos.aafwk.content.Intent;
@@ -19,9 +19,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class JavaJokeWidget extends WidgetController {
+public class JavaJokeForm extends FormController {
 
-    private static final HiLogLabel TAG = new HiLogLabel(HiLog.DEBUG, 0x0, JavaJokeWidget.class.getName());
+    private static final HiLogLabel TAG = new HiLogLabel(HiLog.DEBUG, 0x0, JavaJokeForm.class.getName());
 
     private static final int DEFAULT_DIMENSION_2X4 = 3;
     private static final Map<Integer, Integer> RESOURCE_ID_MAP = new HashMap<>();
@@ -32,23 +32,23 @@ public class JavaJokeWidget extends WidgetController {
         RESOURCE_ID_MAP.put(DEFAULT_DIMENSION_2X4, ResourceTable.Layout_form_joke_widget_2_4);
     }
 
-    public JavaJokeWidget(final WidgetContext widgetContext, final WidgetInfo widgetInfo) {
-        super(widgetContext, widgetInfo);
+    public JavaJokeForm(final FormContext formContext, final FormProperties formProperties) {
+        super(formContext, formProperties);
     }
 
     @Override
-    public ProviderFormInfo bindWidgetData() {
+    public ProviderFormInfo bindFormData() {
         loadJoke();
-        return new ProviderFormInfo(RESOURCE_ID_MAP.get(widgetInfo.getDimension()), widgetContext);
+        return new ProviderFormInfo(RESOURCE_ID_MAP.get(formProperties.getDimension()), formContext);
     }
 
     @Override
-    public void updateWidgetData() {
+    public void updateFormData() {
         loadJoke();
     }
 
     @Override
-    public void onTriggerWidgetEvent(final String message) {
+    public void onTriggerFormEvent(final String message) {
 
     }
 
@@ -58,12 +58,12 @@ public class JavaJokeWidget extends WidgetController {
     }
 
     private void loadJoke() {
-        widgetContext.getGlobalTaskDispatcher(TaskPriority.DEFAULT).asyncDispatch(() -> {
+        formContext.getGlobalTaskDispatcher(TaskPriority.DEFAULT).asyncDispatch(() -> {
             try {
                 final Response<Joke> jokeResponse = MyApplication.getApiService().fetchJokes().execute();
                 if(jokeResponse.isSuccessful()) {
                     final Joke joke = jokeResponse.body();
-                    updateForm(widgetInfo.getWidgetId(), joke);
+                    updateForm(formProperties.getFormId(), joke);
                 }
             } catch (IOException e) {
                 HiLog.error(TAG, "Failed to fetch jokes: " + e.getMessage(),e);
@@ -72,14 +72,14 @@ public class JavaJokeWidget extends WidgetController {
     }
 
     private void updateForm(final long formId, final Joke joke) {
-        if(!widgetContext.isWidgetStillAlive(formId))
+        if(!formContext.isFormStillAlive(formId))
             return;
 
-        widgetContext.getMainTaskDispatcher().asyncDispatch(() -> {
-            final ComponentProvider componentProvider = new ComponentProvider(ResourceTable.Layout_form_joke_widget_2_4, widgetContext);
+        formContext.getMainTaskDispatcher().asyncDispatch(() -> {
+            final ComponentProvider componentProvider = new ComponentProvider(ResourceTable.Layout_form_joke_widget_2_4, formContext);
             componentProvider.setText(ResourceTable.Id_t_form_joke_widget_joke, joke.getValue());
             componentProvider.setText(ResourceTable.Id_t_form_joke_widget_created_time, "Joke is from " + simpleDateFormat.format(new Date()));
-            widgetContext.updateWidget(formId, componentProvider);
+            formContext.updateFormWidget(formId, componentProvider);
         });
     }
 }

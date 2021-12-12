@@ -1,9 +1,9 @@
-package com.minkiapps.cardability.test.widget.impl;
+package com.minkiapps.cardability.test.form.impl;
 
 import com.minkiapps.cardability.test.ResourceTable;
 import com.minkiapps.cardability.test.slice.LocationAbilitySlice;
-import com.minkiapps.widgetmanager.WidgetController;
-import com.minkiapps.widgetmanager.model.WidgetInfo;
+import com.minkiapps.form.FormController;
+import com.minkiapps.form.model.FormProperties;
 import ohos.aafwk.ability.AbilitySlice;
 import ohos.aafwk.ability.ProviderFormInfo;
 import ohos.aafwk.content.Intent;
@@ -22,8 +22,8 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class LocationWidget extends WidgetController {
-    private static final HiLogLabel TAG = new HiLogLabel(HiLog.DEBUG, 0x0, LocationWidget.class.getName());
+public class LocationForm extends FormController {
+    private static final HiLogLabel TAG = new HiLogLabel(HiLog.DEBUG, 0x0, LocationForm.class.getName());
 
     private static final int DEFAULT_DIMENSION_1X2 = 1;
     private static final int DEFAULT_DIMENSION_2X2 = 2;
@@ -41,36 +41,36 @@ public class LocationWidget extends WidgetController {
     private final Locator locator;
     private final GeoConvert geoConvert = new GeoConvert();
 
-    public LocationWidget(final WidgetContext widgetContext,
-                          final WidgetInfo widgetInfo) {
-        super(widgetContext, widgetInfo);
-        this.locator = new Locator(widgetContext);
+    public LocationForm(final FormContext formContext,
+                        final FormProperties formProperties) {
+        super(formContext, formProperties);
+        this.locator = new Locator(formContext);
     }
 
     @Override
-    public ProviderFormInfo bindWidgetData() {
-        final ProviderFormInfo providerFormInfo = new ProviderFormInfo(RESOURCE_ID_MAP.get(widgetInfo.getDimension()), widgetContext);
+    public ProviderFormInfo bindFormData() {
+        final ProviderFormInfo providerFormInfo = new ProviderFormInfo(RESOURCE_ID_MAP.get(formProperties.getDimension()), formContext);
         final ComponentProvider componentProvider = providerFormInfo.getComponentProvider();
         componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_disabled, Component.HIDE);
         componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_container, Component.HIDE);
-        requestLocation(widgetInfo.getWidgetId(), componentProvider);
+        requestLocation(formProperties.getFormId(), componentProvider);
         return providerFormInfo;
     }
 
     @Override
-    public void updateWidgetData() {
+    public void updateFormData() {
         HiLog.debug(TAG, "update form data timing, default 30 minutes");
 
-        final long formId = widgetInfo.getWidgetId();
-        final ComponentProvider componentProvider = new ComponentProvider(RESOURCE_ID_MAP.get(widgetInfo.getDimension()), widgetContext);
+        final long formId = formProperties.getFormId();
+        final ComponentProvider componentProvider = new ComponentProvider(RESOURCE_ID_MAP.get(formProperties.getDimension()), formContext);
         componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_disabled, Component.HIDE);
         componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_container, Component.HIDE);
         requestLocation(formId, componentProvider);
-        widgetContext.updateWidget(formId, componentProvider);
+        formContext.updateFormWidget(formId, componentProvider);
     }
 
     private void requestLocation(final long formId, final ComponentProvider componentProvider) {
-        switch (widgetContext.canUseLocation()) {
+        switch (formContext.canUseLocation()) {
             case READY:
                 componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_container, Component.VISIBLE);
                 locator.requestOnce(new RequestParam(RequestParam.PRIORITY_FAST_FIRST_FIX, 0, 0), new LocatorCallback() {
@@ -81,7 +81,7 @@ public class LocationWidget extends WidgetController {
                                     .getAddressFromLocation(location.getLatitude(), location.getLongitude(), 1);
 
                             if (!addressList.isEmpty()) {
-                                if (!widgetContext.isWidgetStillAlive(formId))
+                                if (!formContext.isFormStillAlive(formId))
                                     return;
 
                                 final GeoAddress address = addressList.get(0);
@@ -129,14 +129,14 @@ public class LocationWidget extends WidgetController {
                         address.getLongitude())
         );
 
-        if(widgetInfo.getDimension() == DEFAULT_DIMENSION_2X2) {
+        if(formProperties.getDimension() == DEFAULT_DIMENSION_2X2) {
             componentProvider.setText(ResourceTable.Id_t_form_location_widget_last_updated_time, "Last updated time: " + simpleDateFormat.format(new Date()));
-            widgetContext.getGlobalTaskDispatcher(TaskPriority.DEFAULT).asyncDispatch(() -> {
+            formContext.getGlobalTaskDispatcher(TaskPriority.DEFAULT).asyncDispatch(() -> {
                 try {
                     final InputStream in = new URL(String.format("https://www.countryflags.io/%s/shiny/64.png", address.getCountryCode())).openStream();
                     final PixelMap pixelmap = ImageSource.create(in, new ImageSource.SourceOptions()).createPixelmap(new ImageSource.DecodingOptions());
                     componentProvider.setImagePixelMap(ResourceTable.Id_i_form_location_widget_country_flag, pixelmap);
-                    widgetContext.updateWidget(widgetInfo.getWidgetId(), componentProvider);
+                    formContext.updateFormWidget(formProperties.getFormId(), componentProvider);
                 } catch (IOException e) {
                     HiLog.error(TAG, "Failed to fetch country flag: " + e.getMessage());
                 }
@@ -144,11 +144,11 @@ public class LocationWidget extends WidgetController {
             });
         }
 
-        widgetContext.updateWidget(widgetInfo.getWidgetId(), componentProvider);
+        formContext.updateFormWidget(formProperties.getFormId(), componentProvider);
     }
 
     @Override
-    public void onTriggerWidgetEvent(final String message) {
+    public void onTriggerFormEvent(final String message) {
 
     }
 

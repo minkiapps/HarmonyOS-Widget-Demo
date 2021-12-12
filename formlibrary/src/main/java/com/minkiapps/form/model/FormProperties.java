@@ -1,26 +1,26 @@
-package com.minkiapps.widgetmanager.model;
+package com.minkiapps.form.model;
 
-import com.minkiapps.widgetmanager.model.enums.ScreenType;
+import com.minkiapps.form.model.enums.ScreenType;
 
-public class WidgetInfo {
+public class FormProperties {
 
-    private final long widgetId;
+    private final long formId;
     private final String name;
     private final int dimension;
     private final ScreenType screenType;
 
-    public WidgetInfo(final long widgetId,
-                      final String name,
-                      final int dimension,
-                      final ScreenType screenType) {
-        this.widgetId = widgetId;
+    public FormProperties(final long formId,
+                          final String name,
+                          final int dimension,
+                          final ScreenType screenType) {
+        this.formId = formId;
         this.name = name;
         this.dimension = dimension;
         this.screenType = screenType;
     }
 
-    public long getWidgetId() {
-        return widgetId;
+    public long getFormId() {
+        return formId;
     }
 
     public String getName() {
@@ -61,8 +61,8 @@ public class WidgetInfo {
             return this;
         }
 
-        public final WidgetInfo build() {
-            return new WidgetInfo(
+        public final FormProperties build() {
+            return new FormProperties(
                     formId,
                     name,
                     dimension,
