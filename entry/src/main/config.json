@@ -99,6 +99,29 @@
             ],
             "updateEnabled": true,
             "updateDuration": 1
+          },
+          {
+            "name": "widget",
+            "metaData": {
+              "customizeData": [
+                {
+                  "name": "exteCoverFACard",
+                  "value": "com.minkiapps.cardability.test"
+                }
+              ]
+            },
+            "jsComponentName": "widget",
+            "isDefault": false,
+            "scheduledUpdateTime": "10:30",
+            "defaultDimension": "2*2",
+            "description": "This is a logistic widget",
+            "colorMode": "auto",
+            "type": "JS",
+            "supportDimensions": [
+              "2*2"
+            ],
+            "updateEnabled": true,
+            "updateDuration": 1
           }
         ],
         "launchType": "standard"
@@ -110,6 +133,17 @@
           "pages/index/index"
         ],
         "name": "jsjokewidget",
+        "window": {
+          "designWidth": 720,
+          "autoDesignWidth": true
+        },
+        "type": "form"
+      },
+      {
+        "pages": [
+          "pages/index/index"
+        ],
+        "name": "widget",
         "window": {
           "designWidth": 720,
           "autoDesignWidth": true

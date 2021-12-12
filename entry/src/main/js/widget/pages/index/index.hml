@@ -1,0 +1,14 @@
+<div class="root_layout" onclick="routerEvent">
+    <div if="{{ isQtzType }}" class="qtz_container">
+        <image class="qtz_image" src="/common/box.png"></image>
+        <text class="qtz_title">{{ title }}</text>
+        <text class="qtz_description">{{ description }}</text>
+    </div>
+    <stack else>
+        <div class="container">
+            <image class="image" src="/common/box.png"></image>
+            <text class="title">{{ title }}</text>
+            <text class="description">{{ description }}</text>
+        </div>
+    </stack>
+</div>

@@ -19,9 +19,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class JokeWidget extends WidgetController {
+public class JavaJokeWidget extends WidgetController {
 
-    private static final HiLogLabel TAG = new HiLogLabel(HiLog.DEBUG, 0x0, JokeWidget.class.getName());
+    private static final HiLogLabel TAG = new HiLogLabel(HiLog.DEBUG, 0x0, JavaJokeWidget.class.getName());
 
     private static final int DEFAULT_DIMENSION_2X4 = 3;
     private static final Map<Integer, Integer> RESOURCE_ID_MAP = new HashMap<>();
@@ -32,7 +32,7 @@ public class JokeWidget extends WidgetController {
         RESOURCE_ID_MAP.put(DEFAULT_DIMENSION_2X4, ResourceTable.Layout_form_joke_widget_2_4);
     }
 
-    public JokeWidget(final WidgetContext widgetContext, final WidgetInfo widgetInfo) {
+    public JavaJokeWidget(final WidgetContext widgetContext, final WidgetInfo widgetInfo) {
         super(widgetContext, widgetInfo);
     }
 

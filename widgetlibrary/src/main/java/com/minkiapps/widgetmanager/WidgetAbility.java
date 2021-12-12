@@ -39,6 +39,7 @@ abstract public class WidgetAbility extends LifeCycleTrackerAbility implements W
     public void onStart(Intent intent) {
         super.onStart(intent);
         super.setMainRoute(getMainRouteEntry());
+
         if (intentFromWidget(intent)) {
             topWidgetSlice = getRoutePageSlice(intent);
             if (topWidgetSlice != null) {

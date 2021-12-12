@@ -49,8 +49,12 @@ public class LocationWidget extends WidgetController {
 
     @Override
     public ProviderFormInfo bindWidgetData() {
-        updateWidgetData();
-        return new ProviderFormInfo(RESOURCE_ID_MAP.get(widgetInfo.getDimension()), widgetContext);
+        final ProviderFormInfo providerFormInfo = new ProviderFormInfo(RESOURCE_ID_MAP.get(widgetInfo.getDimension()), widgetContext);
+        final ComponentProvider componentProvider = providerFormInfo.getComponentProvider();
+        componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_disabled, Component.HIDE);
+        componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_container, Component.HIDE);
+        requestLocation(widgetInfo.getWidgetId(), componentProvider);
+        return providerFormInfo;
     }
 
     @Override
@@ -58,13 +62,17 @@ public class LocationWidget extends WidgetController {
         HiLog.debug(TAG, "update form data timing, default 30 minutes");
 
         final long formId = widgetInfo.getWidgetId();
-
         final ComponentProvider componentProvider = new ComponentProvider(RESOURCE_ID_MAP.get(widgetInfo.getDimension()), widgetContext);
         componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_disabled, Component.HIDE);
         componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_container, Component.HIDE);
+        requestLocation(formId, componentProvider);
+        widgetContext.updateWidget(formId, componentProvider);
+    }
 
+    private void requestLocation(final long formId, final ComponentProvider componentProvider) {
         switch (widgetContext.canUseLocation()) {
             case READY:
+                componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_container, Component.VISIBLE);
                 locator.requestOnce(new RequestParam(RequestParam.PRIORITY_FAST_FIRST_FIX, 0, 0), new LocatorCallback() {
                     @Override
                     public void onLocationReport(final Location location) {
@@ -99,15 +107,13 @@ public class LocationWidget extends WidgetController {
 
             case PERMISSION_NOT_GRANTED:
                 componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_disabled, Component.VISIBLE);
-                componentProvider.setText(ResourceTable.Id_t_form_location_widget_disabled_explanation, "Permanent location permission is not granted");
-                widgetContext.updateWidget(formId, componentProvider);
+                componentProvider.setText(ResourceTable.Id_t_form_location_widget_disabled_explanation, "Location permission is not granted");
                 break;
 
             case DISABLED:
                 locator.requestEnableLocation();
                 componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_disabled, Component.VISIBLE);
                 componentProvider.setText(ResourceTable.Id_t_form_location_widget_disabled_explanation, "Location is disabled");
-                widgetContext.updateWidget(formId, componentProvider);
                 break;
         }
     }

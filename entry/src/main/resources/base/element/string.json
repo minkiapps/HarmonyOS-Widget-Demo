@@ -6,23 +6,7 @@
     },
     {
       "name": "mainability_description",
-      "value": "Java_Empty Ability"
-    },
-    {
-      "name": "mainability_HelloWorld",
-      "value": "Hello World"
-    },
-    {
-      "name": "widget_ability_description",
-      "value": "This is a WidgetAbility"
-    },
-    {
-      "name": "widget_title",
-      "value": "Title"
-    },
-    {
-      "name": "widget_introduction",
-      "value": "Introduction"
+      "value": "Main Ability"
     }
   ]
 }

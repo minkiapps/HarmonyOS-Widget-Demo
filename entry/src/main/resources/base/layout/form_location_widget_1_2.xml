@@ -16,12 +16,13 @@
         <Image
             ohos:start_margin="8vp"
             ohos:layout_alignment="vertical_center"
-            ohos:height="32vp"
-            ohos:width="32vp"
+            ohos:height="28vp"
+            ohos:width="28vp"
             ohos:image_src="$media:icon_location"
             ohos:scale_mode="stretch"/>
 
         <Text
+            ohos:text_size="12fp"
             ohos:id="$+id:t_form_location_widget_disabled_explanation"
             ohos:start_margin="12vp"
             ohos:end_margin="12vp"

@@ -1,0 +1,16 @@
+{
+  "data": {
+    "isQtzType" : false,
+    "title": "Huawei P50 Pro",
+    "description": "Arrived in destination country..."
+  },
+  "actions": {
+    "routerEvent": {
+      "action": "router",
+      "abilityName": "com.minkiapps.cardability.test.MainAbility",
+      "params": {
+        "message": "button"
+      }
+    }
+  }
+}
