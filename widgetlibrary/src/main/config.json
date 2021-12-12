@@ -1,0 +1,24 @@
+{
+  "app": {
+    "bundleName": "com.minkiapps.cardability.test",
+    "vendor": "minkiapps",
+    "version": {
+      "code": 1000000,
+      "name": "1.0.0"
+    }
+  },
+  "deviceConfig": {
+  },
+  "module": {
+    "package": "com.minkiapps.widgetmanager",
+    "deviceType": [
+      "phone",
+      "tablet"
+    ],
+    "distro": {
+      "deliveryWithInstall": true,
+      "moduleName": "widgetlibrary",
+      "moduleType": "har"
+    }
+  }
+}

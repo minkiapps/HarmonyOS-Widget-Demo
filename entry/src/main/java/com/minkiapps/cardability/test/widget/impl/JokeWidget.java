@@ -3,10 +3,9 @@ package com.minkiapps.cardability.test.widget.impl;
 import com.minkiapps.cardability.test.MyApplication;
 import com.minkiapps.cardability.test.ResourceTable;
 import com.minkiapps.cardability.test.net.model.Joke;
-import com.minkiapps.cardability.test.widget.controller.FormController;
-import ohos.aafwk.ability.AbilitySlice;
+import com.minkiapps.widgetmanager.WidgetController;
+import com.minkiapps.widgetmanager.model.WidgetInfo;
 import ohos.aafwk.ability.ProviderFormInfo;
-import ohos.aafwk.content.Intent;
 import ohos.agp.components.ComponentProvider;
 import ohos.app.dispatcher.task.TaskPriority;
 import ohos.hiviewdfx.HiLog;
@@ -17,7 +16,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class JokeWidget extends FormController {
+public class JokeWidget extends WidgetController {
 
     private static final HiLogLabel TAG = new HiLogLabel(HiLog.DEBUG, 0x0, JokeWidget.class.getName());
 
@@ -30,28 +29,33 @@ public class JokeWidget extends FormController {
         RESOURCE_ID_MAP.put(DEFAULT_DIMENSION_2X4, ResourceTable.Layout_form_joke_widget_2_4);
     }
 
-    public JokeWidget(final FormContext formContext, final String formName, final Integer dimension) {
-        super(formContext, formName, dimension);
+    public JokeWidget(final WidgetContext widgetContext, final WidgetInfo widgetInfo) {
+        super(widgetContext, widgetInfo);
     }
 
     @Override
-    public ProviderFormInfo bindFormData() {
-        HiLog.debug(TAG, "bind form data when create form");
-        return new ProviderFormInfo(RESOURCE_ID_MAP.get(dimension), formContext);
+    public ProviderFormInfo bindWidgetData() {
+        loadJoke();
+        return new ProviderFormInfo(RESOURCE_ID_MAP.get(widgetInfo.getDimension()), widgetContext);
     }
 
     @Override
-    public void updateFormData(final long formId) {
-        loadJoke(formId);
+    public void updateWidgetData() {
+        loadJoke();
     }
 
-    private void loadJoke(final long formId) {
-        formContext.getGlobalTaskDispatcher(TaskPriority.DEFAULT).asyncDispatch(() -> {
+    @Override
+    public void onTriggerWidgetEvent(final String message) {
+
+    }
+
+    private void loadJoke() {
+        widgetContext.getGlobalTaskDispatcher(TaskPriority.DEFAULT).asyncDispatch(() -> {
             try {
                 final Response<Joke> jokeResponse = MyApplication.getApiService().fetchJokes().execute();
                 if(jokeResponse.isSuccessful()) {
                     final Joke joke = jokeResponse.body();
-                    updateForm(formId, joke);
+                    updateForm(widgetInfo.getWidgetId(), joke);
                 }
             } catch (IOException e) {
                 HiLog.error(TAG, "Failed to fetch jokes: " + e.getMessage(),e);
@@ -60,24 +64,14 @@ public class JokeWidget extends FormController {
     }
 
     private void updateForm(final long formId, final Joke joke) {
-        if(!formContext.isWidgetStillAlive(formId))
+        if(!widgetContext.isWidgetStillAlive(formId))
             return;
 
-        formContext.getMainTaskDispatcher().asyncDispatch(() -> {
-            final ComponentProvider componentProvider = new ComponentProvider(ResourceTable.Layout_form_joke_widget_2_4, formContext);
+        widgetContext.getMainTaskDispatcher().asyncDispatch(() -> {
+            final ComponentProvider componentProvider = new ComponentProvider(ResourceTable.Layout_form_joke_widget_2_4, widgetContext);
             componentProvider.setText(ResourceTable.Id_t_form_joke_widget_joke, joke.getValue());
             componentProvider.setText(ResourceTable.Id_t_form_joke_widget_created_time, "Joke is from " + simpleDateFormat.format(new Date()));
-            formContext.updateWidget(formId, componentProvider);
+            widgetContext.updateWidget(formId, componentProvider);
         });
-    }
-
-    @Override
-    public void onTriggerFormEvent(final long formId, final String message) {
-
-    }
-
-    @Override
-    public Class<? extends AbilitySlice> getRoutePageSlice(final Intent intent) {
-        return null;
     }
 }

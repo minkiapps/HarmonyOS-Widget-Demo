@@ -1,14 +1,13 @@
-package com.minkiapps.cardability.test;
+package com.minkiapps.widgetmanager;
 
+import com.minkiapps.widgetmanager.utils.LogUtils;
 import ohos.aafwk.ability.Ability;
 import ohos.aafwk.ability.ProviderFormInfo;
 import ohos.aafwk.content.Intent;
-import ohos.hiviewdfx.HiLog;
-import ohos.hiviewdfx.HiLogLabel;
 
 public abstract class LifeCycleTrackerAbility extends Ability {
 
-    private static final HiLogLabel TAG = new HiLogLabel(HiLog.DEBUG, 0x01, "LifeCycleTrackerAbility");
+    private static final String TAG = LifeCycleTrackerAbility.class.getSimpleName();
 
     enum LifeCycleState {
         NOT_INITIALISED,
@@ -87,10 +86,10 @@ public abstract class LifeCycleTrackerAbility extends Ability {
     }
 
     protected void logLifeCycleStateChanged(final String log) {
-        HiLog.debug(TAG, String.format("%s, ability hashCode: %s", log, hashCode()));
+        LogUtils.d(TAG, String.format("%s, ability hashCode: %s", log, hashCode()));
     }
 
     protected void logWithLifeCycleData(final String log) {
-        HiLog.debug(TAG, String.format("%s, lifeCycleState: %s, ability hashCode: %s", log, lifeCycleState, hashCode()));
+        LogUtils.d(TAG, String.format("%s, lifeCycleState: %s, ability hashCode: %s", log, lifeCycleState, hashCode()));
     }
 }

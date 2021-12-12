@@ -1,10 +1,9 @@
 package com.minkiapps.cardability.test.widget.impl;
 
 import com.minkiapps.cardability.test.ResourceTable;
-import com.minkiapps.cardability.test.widget.controller.FormController;
-import ohos.aafwk.ability.AbilitySlice;
+import com.minkiapps.widgetmanager.WidgetController;
+import com.minkiapps.widgetmanager.model.WidgetInfo;
 import ohos.aafwk.ability.ProviderFormInfo;
-import ohos.aafwk.content.Intent;
 import ohos.agp.components.Component;
 import ohos.agp.components.ComponentProvider;
 import ohos.app.dispatcher.task.TaskPriority;
@@ -20,8 +19,10 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class LocationWidget extends FormController {
+public class LocationWidget extends WidgetController {
     private static final HiLogLabel TAG = new HiLogLabel(HiLog.DEBUG, 0x0, LocationWidget.class.getName());
+
+    private static final int DEFAULT_DIMENSION_1X2 = 1;
     private static final int DEFAULT_DIMENSION_2X2 = 2;
 
     private static final Map<Integer, Integer> RESOURCE_ID_MAP = new HashMap<>();
@@ -30,33 +31,36 @@ public class LocationWidget extends FormController {
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, Locale.getDefault());
 
     static {
+        RESOURCE_ID_MAP.put(DEFAULT_DIMENSION_1X2, ResourceTable.Layout_form_location_widget_1_2);
         RESOURCE_ID_MAP.put(DEFAULT_DIMENSION_2X2, ResourceTable.Layout_form_location_widget_2_2);
     }
 
     private final Locator locator;
     private final GeoConvert geoConvert = new GeoConvert();
 
-    public LocationWidget(final FormContext formContext, final String formName, final Integer dimension) {
-        super(formContext, formName, dimension);
-        locator = new Locator(formContext);
+    public LocationWidget(final WidgetContext widgetContext,
+                          final WidgetInfo widgetInfo) {
+        super(widgetContext, widgetInfo);
+        this.locator = new Locator(widgetContext);
     }
 
     @Override
-    public ProviderFormInfo bindFormData() {
-        HiLog.debug(TAG, "bind form data when create form");
-        return new ProviderFormInfo(RESOURCE_ID_MAP.get(dimension), formContext);
+    public ProviderFormInfo bindWidgetData() {
+        updateWidgetData();
+        return new ProviderFormInfo(RESOURCE_ID_MAP.get(widgetInfo.getDimension()), widgetContext);
     }
 
     @Override
-    public void updateFormData(long formId) {
+    public void updateWidgetData() {
         HiLog.debug(TAG, "update form data timing, default 30 minutes");
 
-        final ComponentProvider componentProvider = new ComponentProvider(ResourceTable.Layout_form_location_widget_2_2, formContext);
+        final long formId = widgetInfo.getWidgetId();
+
+        final ComponentProvider componentProvider = new ComponentProvider(RESOURCE_ID_MAP.get(widgetInfo.getDimension()), widgetContext);
         componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_disabled, Component.HIDE);
         componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_container, Component.HIDE);
-        componentProvider.setText(ResourceTable.Id_t_form_location_widget_last_updated_time, "Last updated time: " + simpleDateFormat.format(new Date()));
 
-        switch (formContext.canUseLocation()) {
+        switch (widgetContext.canUseLocation()) {
             case READY:
                 locator.requestOnce(new RequestParam(RequestParam.PRIORITY_FAST_FIRST_FIX, 0, 0), new LocatorCallback() {
                     @Override
@@ -66,12 +70,12 @@ public class LocationWidget extends FormController {
                                     .getAddressFromLocation(location.getLatitude(), location.getLongitude(), 1);
 
                             if (!addressList.isEmpty()) {
-                                if (!formContext.isWidgetStillAlive(formId))
+                                if (!widgetContext.isWidgetStillAlive(formId))
                                     return;
 
                                 final GeoAddress address = addressList.get(0);
                                 HiLog.debug(TAG, "Address: " + address.toString());
-                                setAddress(formId, componentProvider, address);
+                                setAddress(componentProvider, address);
                             }
                         } catch (IOException e) {
                             HiLog.error(TAG, "Failed to convert lat and long to address");
@@ -93,55 +97,49 @@ public class LocationWidget extends FormController {
             case PERMISSION_NOT_GRANTED:
                 componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_disabled, Component.VISIBLE);
                 componentProvider.setText(ResourceTable.Id_t_form_location_widget_disabled_explanation, "Permanent location permission is not granted");
-                formContext.updateWidget(formId, componentProvider);
+                widgetContext.updateWidget(formId, componentProvider);
                 break;
 
             case DISABLED:
                 locator.requestEnableLocation();
                 componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_disabled, Component.VISIBLE);
                 componentProvider.setText(ResourceTable.Id_t_form_location_widget_disabled_explanation, "Location is disabled");
-                formContext.updateWidget(formId, componentProvider);
+                widgetContext.updateWidget(formId, componentProvider);
                 break;
         }
     }
 
-    private void setAddress(final long formId,
-                            final ComponentProvider componentProvider,
+    private void setAddress(final ComponentProvider componentProvider,
                             final GeoAddress address) {
         componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_container, Component.VISIBLE);
         componentProvider.setText(ResourceTable.Id_t_form_location_widget_address,
-                //Wagramer Straße 17-19, 22. Bezirk Donaustadt, 1220 Wien, Österreich
-                String.format("%s %s, %s, %s %s, %s",
-                        address.getRoadName(),
-                        address.getSubRoadName(),
-                        address.getLocality(),
-                        address.getPostalCode(),
+                String.format("%s %s %.4f, %.4f",
                         address.getAdministrativeArea(),
-                        address.getCountryName())
+                        address.getCountryName(),
+                        address.getLatitude(),
+                        address.getLongitude())
         );
 
-        formContext.getGlobalTaskDispatcher(TaskPriority.DEFAULT).asyncDispatch(() -> {
-            try {
-                final InputStream in = new URL(String.format("https://www.countryflags.io/%s/shiny/64.png", address.getCountryCode())).openStream();
-                final PixelMap pixelmap = ImageSource.create(in, new ImageSource.SourceOptions()).createPixelmap(new ImageSource.DecodingOptions());
-                componentProvider.setImagePixelMap(ResourceTable.Id_i_form_location_widget_country_flag, pixelmap);
-                formContext.updateWidget(formId, componentProvider);
-            } catch (IOException e) {
-                HiLog.error(TAG, "Failed to fetch country flag: " + e.getMessage());
-            }
+        if(widgetInfo.getDimension() == DEFAULT_DIMENSION_2X2) {
+            componentProvider.setText(ResourceTable.Id_t_form_location_widget_last_updated_time, "Last updated time: " + simpleDateFormat.format(new Date()));
+            widgetContext.getGlobalTaskDispatcher(TaskPriority.DEFAULT).asyncDispatch(() -> {
+                try {
+                    final InputStream in = new URL(String.format("https://www.countryflags.io/%s/shiny/64.png", address.getCountryCode())).openStream();
+                    final PixelMap pixelmap = ImageSource.create(in, new ImageSource.SourceOptions()).createPixelmap(new ImageSource.DecodingOptions());
+                    componentProvider.setImagePixelMap(ResourceTable.Id_i_form_location_widget_country_flag, pixelmap);
+                    widgetContext.updateWidget(widgetInfo.getWidgetId(), componentProvider);
+                } catch (IOException e) {
+                    HiLog.error(TAG, "Failed to fetch country flag: " + e.getMessage());
+                }
 
-        });
-        formContext.updateWidget(formId, componentProvider);
+            });
+        }
+
+        widgetContext.updateWidget(widgetInfo.getWidgetId(), componentProvider);
     }
 
     @Override
-    public void onTriggerFormEvent(long formId, String message) {
-        HiLog.debug(TAG, "handle card click event.");
-    }
+    public void onTriggerWidgetEvent(final String message) {
 
-    @Override
-    public Class<? extends AbilitySlice> getRoutePageSlice(Intent intent) {
-        HiLog.debug(TAG, "get the default page to route when you click card.");
-        return null;
     }
 }
