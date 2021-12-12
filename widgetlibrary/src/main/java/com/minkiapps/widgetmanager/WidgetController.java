@@ -3,8 +3,10 @@ package com.minkiapps.widgetmanager;
 import com.minkiapps.widgetmanager.model.WidgetInfo;
 import com.minkiapps.widgetmanager.model.enums.LocationStatus;
 import com.minkiapps.widgetmanager.model.enums.ScreenType;
+import ohos.aafwk.ability.AbilitySlice;
 import ohos.aafwk.ability.FormBindingData;
 import ohos.aafwk.ability.ProviderFormInfo;
+import ohos.aafwk.content.Intent;
 import ohos.agp.components.ComponentProvider;
 import ohos.app.Context;
 
@@ -41,4 +43,6 @@ public abstract class WidgetController {
      * ONLY works for JS Widgets!
      */
     public abstract void onTriggerWidgetEvent(String message);
+
+    public abstract Class<? extends AbilitySlice> getRoutePageSlice(Intent intent);
 }

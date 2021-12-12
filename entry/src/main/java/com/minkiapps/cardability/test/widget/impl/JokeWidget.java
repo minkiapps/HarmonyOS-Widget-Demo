@@ -3,9 +3,12 @@ package com.minkiapps.cardability.test.widget.impl;
 import com.minkiapps.cardability.test.MyApplication;
 import com.minkiapps.cardability.test.ResourceTable;
 import com.minkiapps.cardability.test.net.model.Joke;
+import com.minkiapps.cardability.test.slice.JokeAbilitySlice;
 import com.minkiapps.widgetmanager.WidgetController;
 import com.minkiapps.widgetmanager.model.WidgetInfo;
+import ohos.aafwk.ability.AbilitySlice;
 import ohos.aafwk.ability.ProviderFormInfo;
+import ohos.aafwk.content.Intent;
 import ohos.agp.components.ComponentProvider;
 import ohos.app.dispatcher.task.TaskPriority;
 import ohos.hiviewdfx.HiLog;
@@ -47,6 +50,11 @@ public class JokeWidget extends WidgetController {
     @Override
     public void onTriggerWidgetEvent(final String message) {
 
+    }
+
+    @Override
+    public Class<? extends AbilitySlice> getRoutePageSlice(final Intent intent) {
+        return JokeAbilitySlice.class;
     }
 
     private void loadJoke() {

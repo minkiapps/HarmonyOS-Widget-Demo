@@ -1,9 +1,12 @@
 package com.minkiapps.cardability.test.widget.impl;
 
 import com.minkiapps.cardability.test.ResourceTable;
+import com.minkiapps.cardability.test.slice.LocationAbilitySlice;
 import com.minkiapps.widgetmanager.WidgetController;
 import com.minkiapps.widgetmanager.model.WidgetInfo;
+import ohos.aafwk.ability.AbilitySlice;
 import ohos.aafwk.ability.ProviderFormInfo;
+import ohos.aafwk.content.Intent;
 import ohos.agp.components.Component;
 import ohos.agp.components.ComponentProvider;
 import ohos.app.dispatcher.task.TaskPriority;
@@ -141,5 +144,10 @@ public class LocationWidget extends WidgetController {
     @Override
     public void onTriggerWidgetEvent(final String message) {
 
+    }
+
+    @Override
+    public Class<? extends AbilitySlice> getRoutePageSlice(final Intent intent) {
+        return LocationAbilitySlice.class;
     }
 }

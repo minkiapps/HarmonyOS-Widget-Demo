@@ -2,10 +2,13 @@ package com.minkiapps.cardability.test.widget.impl;
 
 import com.minkiapps.cardability.test.MyApplication;
 import com.minkiapps.cardability.test.net.model.Joke;
+import com.minkiapps.cardability.test.slice.JokeAbilitySlice;
 import com.minkiapps.widgetmanager.WidgetController;
 import com.minkiapps.widgetmanager.model.WidgetInfo;
+import ohos.aafwk.ability.AbilitySlice;
 import ohos.aafwk.ability.FormBindingData;
 import ohos.aafwk.ability.ProviderFormInfo;
+import ohos.aafwk.content.Intent;
 import ohos.app.dispatcher.task.TaskPriority;
 import ohos.hiviewdfx.HiLog;
 import ohos.hiviewdfx.HiLogLabel;
@@ -68,5 +71,10 @@ public class JSJokeWidget extends WidgetController {
         if(message.equals(ACTION_RELOAD_JOKE)) {
             loadJoke();
         }
+    }
+
+    @Override
+    public Class<? extends AbilitySlice> getRoutePageSlice(final Intent intent) {
+        return JokeAbilitySlice.class;
     }
 }

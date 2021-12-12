@@ -1,4 +1,4 @@
-<div class="background">
+<div class="background" onclick="routerEvent">
     <stack style="width: 100%; height: 100%;">
         <div class="container" style="width: 100%;">
             <text class="joke-title" >{{ $t('strings.joke_title') }}</text>

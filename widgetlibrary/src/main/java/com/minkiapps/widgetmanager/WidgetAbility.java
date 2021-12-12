@@ -33,6 +33,22 @@ abstract public class WidgetAbility extends LifeCycleTrackerAbility implements W
         return WidgetControllerManager.getInstance(this, widgetFactory);
     }
 
+    private String topWidgetSlice;
+
+    @Override
+    public void onStart(Intent intent) {
+        super.onStart(intent);
+        super.setMainRoute(getMainRouteEntry());
+        if (intentFromWidget(intent)) {
+            topWidgetSlice = getRoutePageSlice(intent);
+            if (topWidgetSlice != null) {
+                setMainRoute(topWidgetSlice);
+            }
+        }
+    }
+
+    protected abstract String getMainRouteEntry();
+
     @Override
     protected ProviderFormInfo onCreateForm(Intent intent) {
         super.onCreateForm(intent);
@@ -65,6 +81,23 @@ abstract public class WidgetAbility extends LifeCycleTrackerAbility implements W
     }
 
     @Override
+    public void onNewIntent(Intent intent) {
+        // Only response to it when starting from a service widget.
+        if (intentFromWidget(intent)) {
+            final String newWidgetSlice = getRoutePageSlice(intent);
+            if (topWidgetSlice == null || !topWidgetSlice.equals(newWidgetSlice)) {
+                topWidgetSlice = newWidgetSlice;
+                restart();
+            }
+        } else {
+            if (topWidgetSlice != null) {
+                topWidgetSlice = null;
+                restart();
+            }
+        }
+    }
+
+    @Override
     protected void onUpdateForm(long formId) {
         super.onUpdateForm(formId);
         final WidgetController widgetController = getWidgetControllerManager().getController(formId);
@@ -82,6 +115,28 @@ abstract public class WidgetAbility extends LifeCycleTrackerAbility implements W
         super.onTriggerFormEvent(formId, message);
         final WidgetController widgetController = getWidgetControllerManager().getController(formId);
         widgetController.onTriggerWidgetEvent(message);
+    }
+
+    private boolean intentFromWidget(Intent intent) {
+        long formId = intent.getLongParam(AbilitySlice.PARAM_FORM_IDENTITY_KEY, INVALID_FORM_ID);
+        return formId != INVALID_FORM_ID;
+    }
+
+    private String getRoutePageSlice(Intent intent) {
+        final long widgetId = intent.getLongParam(AbilitySlice.PARAM_FORM_IDENTITY_KEY, INVALID_FORM_ID);
+        if (widgetId == INVALID_FORM_ID) {
+            return null;
+        }
+
+        final WidgetController widgetController = getWidgetControllerManager().getController(widgetId);
+        if (widgetController == null) {
+            return null;
+        }
+        Class<? extends AbilitySlice> clazz = widgetController.getRoutePageSlice(intent);
+        if (clazz == null) {
+            return null;
+        }
+        return clazz.getName();
     }
 
     @Override

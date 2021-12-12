@@ -4,6 +4,13 @@
     "joke_text": "Loading joke..."
   },
   "actions": {
+    "routerEvent": {
+      "action": "router",
+      "abilityName": "com.minkiapps.cardability.test.MainAbility",
+      "params": {
+        "message": "page"
+      }
+    },
     "reloadJoke": {
       "action": "message",
       "params": "RELOAD_JOKE"
