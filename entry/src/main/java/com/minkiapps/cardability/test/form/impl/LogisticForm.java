@@ -58,4 +58,9 @@ public class LogisticForm extends FormController {
     public Class<? extends AbilitySlice> getRoutePageSlice(final Intent intent) {
         return LogisticAbilitySlice.class;
     }
+
+    @Override
+    public void onDelete() {
+
+    }
 }

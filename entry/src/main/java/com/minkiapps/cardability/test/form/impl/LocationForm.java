@@ -22,7 +22,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class LocationForm extends FormController {
+public class LocationForm extends FormController implements LocatorCallback{
     private static final HiLogLabel TAG = new HiLogLabel(HiLog.DEBUG, 0x0, LocationForm.class.getName());
 
     private static final int DEFAULT_DIMENSION_1X2 = 1;
@@ -53,7 +53,7 @@ public class LocationForm extends FormController {
         final ComponentProvider componentProvider = providerFormInfo.getComponentProvider();
         componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_disabled, Component.HIDE);
         componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_container, Component.HIDE);
-        requestLocation(formProperties.getFormId(), componentProvider);
+        requestLocation(componentProvider);
         return providerFormInfo;
     }
 
@@ -65,44 +65,16 @@ public class LocationForm extends FormController {
         final ComponentProvider componentProvider = new ComponentProvider(RESOURCE_ID_MAP.get(formProperties.getDimension()), formContext);
         componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_disabled, Component.HIDE);
         componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_container, Component.HIDE);
-        requestLocation(formId, componentProvider);
+        requestLocation(componentProvider);
         formContext.updateFormWidget(formId, componentProvider);
     }
 
-    private void requestLocation(final long formId, final ComponentProvider componentProvider) {
+    private void requestLocation(final ComponentProvider componentProvider) {
         switch (formContext.canUseLocation()) {
             case READY:
                 componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_container, Component.VISIBLE);
-                locator.requestOnce(new RequestParam(RequestParam.PRIORITY_FAST_FIRST_FIX, 0, 0), new LocatorCallback() {
-                    @Override
-                    public void onLocationReport(final Location location) {
-                        try {
-                            final List<GeoAddress> addressList = geoConvert
-                                    .getAddressFromLocation(location.getLatitude(), location.getLongitude(), 1);
-
-                            if (!addressList.isEmpty()) {
-                                if (!formContext.isFormStillAlive(formId))
-                                    return;
-
-                                final GeoAddress address = addressList.get(0);
-                                HiLog.debug(TAG, "Address: " + address.toString());
-                                setAddress(componentProvider, address);
-                            }
-                        } catch (IOException e) {
-                            HiLog.error(TAG, "Failed to convert lat and long to address");
-                        }
-                    }
-
-                    @Override
-                    public void onStatusChanged(final int i) {
-                        HiLog.debug(TAG, "Location status changed: " + i);
-                    }
-
-                    @Override
-                    public void onErrorReport(final int i) {
-                        HiLog.debug(TAG, "On location error: " + i);
-                    }
-                });
+                locator.stopLocating(this);
+                locator.requestOnce(new RequestParam(RequestParam.PRIORITY_FAST_FIRST_FIX, 0, 0), this);
                 break;
 
             case PERMISSION_NOT_GRANTED:
@@ -155,5 +127,46 @@ public class LocationForm extends FormController {
     @Override
     public Class<? extends AbilitySlice> getRoutePageSlice(final Intent intent) {
         return LocationAbilitySlice.class;
+    }
+
+    @Override
+    public void onDelete() {
+        locator.stopLocating(this);
+    }
+
+    @Override
+    public void onLocationReport(final Location location) {
+        if(!formContext.isFormStillAlive(formProperties.getFormId())) {
+            return;
+        }
+
+        try {
+            final List<GeoAddress> addressList = geoConvert
+                    .getAddressFromLocation(location.getLatitude(), location.getLongitude(), 1);
+
+            if (!addressList.isEmpty()) {
+                if (!formContext.isFormStillAlive(formProperties.getFormId()))
+                    return;
+
+                final GeoAddress address = addressList.get(0);
+                HiLog.debug(TAG, "Address: " + address.toString());
+
+                final ProviderFormInfo providerFormInfo = new ProviderFormInfo(RESOURCE_ID_MAP.get(formProperties.getDimension()), formContext);
+                final ComponentProvider componentProvider = providerFormInfo.getComponentProvider();
+                setAddress(componentProvider, address);
+            }
+        } catch (IOException e) {
+            HiLog.error(TAG, "Failed to convert lat and long to address");
+        }
+    }
+
+    @Override
+    public void onStatusChanged(final int i) {
+        HiLog.debug(TAG, "Location status changed: " + i);
+    }
+
+    @Override
+    public void onErrorReport(final int i) {
+        HiLog.debug(TAG, "On location error: " + i);
     }
 }

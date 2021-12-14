@@ -44,4 +44,6 @@ public abstract class FormController {
     public abstract void onTriggerFormEvent(String message);
 
     public abstract Class<? extends AbilitySlice> getRoutePageSlice(Intent intent);
+
+    public abstract void onDelete();
 }

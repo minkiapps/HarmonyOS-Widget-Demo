@@ -9,6 +9,7 @@ import ohos.aafwk.ability.AbilitySlice;
 import ohos.aafwk.ability.FormBindingData;
 import ohos.aafwk.ability.ProviderFormInfo;
 import ohos.aafwk.content.Intent;
+import ohos.app.dispatcher.task.Revocable;
 import ohos.app.dispatcher.task.TaskPriority;
 import ohos.hiviewdfx.HiLog;
 import ohos.hiviewdfx.HiLogLabel;
@@ -16,12 +17,15 @@ import ohos.utils.zson.ZSONObject;
 import retrofit2.Response;
 
 import java.io.IOException;
+import java.security.Permission;
 
 public class JSJokeForm extends FormController {
 
     private static final HiLogLabel TAG = new HiLogLabel(HiLog.DEBUG, 0x0, JSJokeForm.class.getName());
 
     private static final String ACTION_RELOAD_JOKE = "RELOAD_JOKE";
+
+    private Revocable revocable;
 
     public JSJokeForm(final FormContext formContext, final FormProperties formProperties) {
         super(formContext, formProperties);
@@ -43,7 +47,11 @@ public class JSJokeForm extends FormController {
         zsonObject.put("joke_color","slategrey");
         zsonObject.put("joke_text","Loading joke...");
         formContext.updateFormWidget(formProperties.getFormId(), new FormBindingData(zsonObject));
-        formContext.getGlobalTaskDispatcher(TaskPriority.DEFAULT).asyncDispatch(() -> {
+
+        if(revocable != null) {
+            revocable.revoke();
+        }
+        revocable = formContext.getGlobalTaskDispatcher(TaskPriority.DEFAULT).asyncDispatch(() -> {
             try {
                 final Response<Joke> jokeResponse = MyApplication.getApiService().fetchJokes().execute();
                 if(jokeResponse.isSuccessful()) {
@@ -76,5 +84,12 @@ public class JSJokeForm extends FormController {
     @Override
     public Class<? extends AbilitySlice> getRoutePageSlice(final Intent intent) {
         return JokeAbilitySlice.class;
+    }
+
+    @Override
+    public void onDelete() {
+        if(revocable != null) {
+            revocable.revoke();
+        }
     }
 }

@@ -10,6 +10,7 @@ import ohos.aafwk.ability.AbilitySlice;
 import ohos.aafwk.ability.ProviderFormInfo;
 import ohos.aafwk.content.Intent;
 import ohos.agp.components.ComponentProvider;
+import ohos.app.dispatcher.task.Revocable;
 import ohos.app.dispatcher.task.TaskPriority;
 import ohos.hiviewdfx.HiLog;
 import ohos.hiviewdfx.HiLogLabel;
@@ -25,6 +26,8 @@ public class JavaJokeForm extends FormController {
 
     private static final int DEFAULT_DIMENSION_2X4 = 3;
     private static final Map<Integer, Integer> RESOURCE_ID_MAP = new HashMap<>();
+
+    private Revocable revocable;
 
     private final String pattern = "HH:mm";
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, Locale.getDefault());
@@ -57,8 +60,18 @@ public class JavaJokeForm extends FormController {
         return JokeAbilitySlice.class;
     }
 
+    @Override
+    public void onDelete() {
+        if(revocable != null) {
+            revocable.revoke();
+        }
+    }
+
     private void loadJoke() {
-        formContext.getGlobalTaskDispatcher(TaskPriority.DEFAULT).asyncDispatch(() -> {
+        if(revocable != null) {
+            revocable.revoke();
+        }
+        revocable = formContext.getGlobalTaskDispatcher(TaskPriority.DEFAULT).asyncDispatch(() -> {
             try {
                 final Response<Joke> jokeResponse = MyApplication.getApiService().fetchJokes().execute();
                 if(jokeResponse.isSuccessful()) {

@@ -117,6 +117,7 @@ public class FormControllerManager {
     }
 
     public synchronized void deleteFormController(long formId) {
+        getController(formId).onDelete();
         preferences.delete(Long.toString(formId));
         preferences.flushSync();
         controllerHashMap.remove(formId);
