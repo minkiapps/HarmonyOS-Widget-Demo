@@ -53,7 +53,12 @@ public class LocationForm extends FormController implements LocatorCallback{
         final ComponentProvider componentProvider = providerFormInfo.getComponentProvider();
         componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_disabled, Component.HIDE);
         componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_container, Component.HIDE);
-        requestLocation(componentProvider);
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                updateFormData();
+            }
+        },100);
         return providerFormInfo;
     }
 
@@ -71,10 +76,17 @@ public class LocationForm extends FormController implements LocatorCallback{
 
     private void requestLocation(final ComponentProvider componentProvider) {
         switch (formContext.canUseLocation()) {
-            case READY:
+            case USE_IN_BACKGROUND_READY:
                 componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_container, Component.VISIBLE);
                 locator.stopLocating(this);
                 locator.requestOnce(new RequestParam(RequestParam.PRIORITY_FAST_FIRST_FIX, 0, 0), this);
+                break;
+            case WHILE_APP_IN_USE_READY:
+                componentProvider.setVisibility(ResourceTable.Id_dl_form_location_widget_container, Component.VISIBLE);
+                final Location cachedLocation = locator.getCachedLocation();
+                if(cachedLocation != null) {
+                    renderWidget(cachedLocation);
+                }
                 break;
 
             case PERMISSION_NOT_GRANTED:
@@ -112,7 +124,6 @@ public class LocationForm extends FormController implements LocatorCallback{
                 } catch (IOException e) {
                     HiLog.error(TAG, "Failed to fetch country flag: " + e.getMessage());
                 }
-
             });
         }
 
@@ -136,6 +147,10 @@ public class LocationForm extends FormController implements LocatorCallback{
 
     @Override
     public void onLocationReport(final Location location) {
+        renderWidget(location);
+    }
+
+    private void renderWidget(final Location location) {
         if(!formContext.isFormStillAlive(formProperties.getFormId())) {
             return;
         }

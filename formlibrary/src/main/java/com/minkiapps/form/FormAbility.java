@@ -11,6 +11,7 @@ import ohos.aafwk.ability.ProviderFormInfo;
 import ohos.aafwk.content.Intent;
 import ohos.aafwk.content.IntentParams;
 import ohos.agp.components.ComponentProvider;
+import ohos.bundle.IBundleManager;
 import ohos.location.Locator;
 
 import java.util.Arrays;
@@ -21,8 +22,12 @@ abstract public class FormAbility extends LifeCycleTrackerAbility implements For
     private static final int INVALID_FORM_ID = -1;
     private static final String TAG = FormAbility.class.getSimpleName();
 
-    private static final String[] locationPermission = {
-            "ohos.permission.LOCATION"
+    private static final String PERMISSION_LOCATION = "ohos.permission.LOCATION";
+    private static final String PERMISSION_LOCATION_BACKGROUND = "ohos.permission.LOCATION_IN_BACKGROUND";
+
+    private static final String[] locationPermissions = {
+            PERMISSION_LOCATION,
+            PERMISSION_LOCATION_BACKGROUND
     };
 
     private final FormControllerFactory formControllerFactory = getFormFactory();
@@ -34,6 +39,8 @@ abstract public class FormAbility extends LifeCycleTrackerAbility implements For
     }
 
     private String topWidgetSlice;
+
+    private Locator locator = null;
 
     @Override
     public void onStart(Intent intent) {
@@ -170,15 +177,21 @@ abstract public class FormAbility extends LifeCycleTrackerAbility implements For
 
     @Override
     public LocationStatus canUseLocation() {
-        if (!Arrays.stream(locationPermission).allMatch(s -> verifySelfPermission(s) == 0)) {
+        if (verifySelfPermission(PERMISSION_LOCATION) == IBundleManager.PERMISSION_DENIED) {
             return LocationStatus.PERMISSION_NOT_GRANTED;
         }
 
-        final Locator locator = new Locator(this);
+        if(locator == null) {
+            locator = new Locator(this);
+        }
         if (!locator.isLocationSwitchOn()) {
             return LocationStatus.DISABLED;
         }
 
-        return LocationStatus.READY;
+        if (Arrays.stream(locationPermissions).allMatch(s -> verifySelfPermission(s) == IBundleManager.PERMISSION_GRANTED)) {
+            return LocationStatus.USE_IN_BACKGROUND_READY;
+        } else {
+            return LocationStatus.WHILE_APP_IN_USE_READY;
+        }
     }
 }
